@@ -1,2 +1,37 @@
-# docs
-Documentation
+# TODO
+
+## O com chceme pisat dokument (cca)
+* Pouzite technologie
+* Architektura celeho systemu
+    * Su nejaki agenti, je nejaky monitor, na agentovi moze byt pripojeny len jeden monitor. Monitor posiela prikazy, agent ich vykona/odpoveda (JSON format). Monitor periodicky updatuje status agentov
+      a monitorovane procesy na nich do Mysql databazy.
+    * Agent podla nastaveneho filtru posiela pakety na server. Na serveri sa pakety zapisu do HBase databazy. PcapSender ich z HBase vyberie, vytvori .pcap subor, posle do ActiveMQ fronty.
+      Bezia nejake detekcne moduly, ktore vyberaju .pcap subory z fronty, vykonavaju na nich detekciu. Detekcia sa zapisuje do Mysql databazy.
+* Build agentov
+    * Windows - visual studio, boost, npcap atd.
+    * Linux - cmake, boost, libpcap atd.
+* Build monitoru
+    * Windows - visual studio, boost, mysqlconnector
+    * Linux - cmake, boost, mysqlconnector
+* Popis JSON formatu v akom komunikuju monitor a agent
+* Popis novych/zmenenych veci v monitore (https://github.com/feistu-tp-spde3/client-cli)
+    * Ake thready bezia
+    * Ako sa hladaju agenti (UDP broadcast)
+    * Ako sa identifikuje agent
+    * XML config
+    * Dostupne prikazy v Cmdline (vstup, vystup, co sa deje ked sa to posle)
+    * Ako funguje updatovaci thread (kedy sa co updatuje)
+* Popis novych/zmenenych veci v agentovi (https://github.com/feistu-tp-spde3/agent)
+    * Ake thready bezia
+    * XML config -- vysvetlit kazdy element
+    * Sniffer
+    * Ako sa posielaju pakety, v akom formate a preco
+    * Ako sa monitoruju procesy (Windows aj Linux)
+    * Prikazy od monitoru a ako na nich reaguje agent
+    * Ukladanie XML configu pri zmene filtru, monitorovanych procesov apod.
+* Databaza
+    * Schema tabuliek
+    * Vysvetlit tabulky
+* Web
+    * Ako vyzera
+    * Ako funguje
