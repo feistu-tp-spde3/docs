@@ -1,6 +1,7 @@
 # TODO
 
 ## O com chceme pisat dokument (cca)
+* Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat
 * Pouzite technologie
 * Architektura celeho systemu
     * Su nejaki agenti, je nejaky monitor, na agentovi moze byt pripojeny len jeden monitor. Monitor posiela prikazy, agent ich vykona/odpoveda (JSON format). Monitor periodicky updatuje status agentov
@@ -47,7 +48,8 @@
     * Neposielat pakety ako hexstring, ale binarne
     * ..
     * ..
-   
+    
+- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat   
 - [X] Pouzite technologie
 - [ ] Architektura systemu
 - [ ] Build agentov
