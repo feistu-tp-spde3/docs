@@ -52,8 +52,8 @@
 - [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat   
 - [X] Pouzite technologie
 - [ ] Architektura systemu
-- [ ] Build agentov
-- [ ] Build monitoru
+- [X] Build agentov
+- [X] Build monitoru
 - [ ] Popis JSON formatu v akom komunikuju monitor a agent
 - [ ] Popis novych/zmenenych veci v monitore
 - [ ] Popis novych/zmenenych veci v agentovi
