@@ -48,15 +48,15 @@
     * ..
     * ..
    
-- [] Pouzite technologie
-- [] Architektura systemu
-- [] Build agentov
-- [] Build monitoru
-- [] Popis JSON formatu v akom komunikuju monitor a agent
-- [] Popis novych/zmenenych veci v monitore
-- [] Popis novych/zmenenych veci v agentovi
-- [] Detekcie
-- [] Databaza
-- [] Web
-- [] Performance
-- [] Future work
+- [ ] Pouzite technologie
+- [ ] Architektura systemu
+- [ ] Build agentov
+- [ ] Build monitoru
+- [ ] Popis JSON formatu v akom komunikuju monitor a agent
+- [ ] Popis novych/zmenenych veci v monitore
+- [ ] Popis novych/zmenenych veci v agentovi
+- [ ] Detekcie
+- [ ] Databaza
+- [ ] Web
+- [ ] Performance
+- [ ] Future work
