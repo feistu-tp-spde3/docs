@@ -20,18 +20,43 @@
     * Ako sa identifikuje agent
     * XML config
     * Dostupne prikazy v Cmdline (vstup, vystup, co sa deje ked sa to posle)
-    * Ako funguje updatovaci thread (kedy sa co updatuje)
+    * Ako funguje updatovaci thread (kedy sa co updatuje, v akom intervale)
 * Popis novych/zmenenych veci v agentovi (https://github.com/feistu-tp-spde3/agent)
     * Ake thready bezia
     * XML config -- vysvetlit kazdy element
     * Sniffer
-    * Ako sa posielaju pakety, v akom formate a preco
+    * Ako sa posielaju pakety, v akom formate a preco (uz neposielame pakety zo suboru ale z pamate)
     * Ako sa monitoruju procesy (Windows aj Linux)
     * Prikazy od monitoru a ako na nich reaguje agent
     * Ukladanie XML configu pri zmene filtru, monitorovanych procesov apod.
+* Zmeny v PcapSender
+    * Aky format bol pouzity predtym
+    * Ako sa to parsuje teraz
+    * Nedostatky?
+* Detekcie
+    * Pripojenie do DB
+    * Zmeny proti predoslym
 * Databaza
     * Schema tabuliek
     * Vysvetlit tabulky
 * Web
     * Ako vyzera
     * Ako funguje
+* Performance
+* Future work
+    * Neposielat pakety ako hexstring, ale binarne
+    * ..
+    * ..
+   
+- [] Pouzite technologie
+- [] Architektura systemu
+- [] Build agentov
+- [] Build monitoru
+- [] Popis JSON formatu v akom komunikuju monitor a agent
+- [] Popis novych/zmenenych veci v monitore
+- [] Popis novych/zmenenych veci v agentovi
+- [] Detekcie
+- [] Databaza
+- [] Web
+- [] Performance
+- [] Future work
