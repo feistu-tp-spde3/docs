@@ -58,7 +58,7 @@
 - [ ] Popis novych/zmenenych veci v monitore - in progress
 - [ ] Popis novych/zmenenych veci v agentovi - in progress
 - [ ] Detekcie
-- [ ] Databaza
+- [ ] Databaza - in progress
 - [ ] Web
 - [ ] Performance
 - [ ] Future work
