@@ -51,14 +51,14 @@
     
 - [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat   
 - [X] Pouzite technologie
-- [ ] Architektura systemu
+- [ ] Architektura systemu (IN PROGRESS - MISO)
 - [X] Build agentov
 - [X] Build monitoru
-- [ ] Popis JSON formatu v akom komunikuju monitor a agent - in progress
-- [ ] Popis novych/zmenenych veci v monitore - in progress
-- [ ] Popis novych/zmenenych veci v agentovi - in progress
+- [ ] Popis JSON formatu v akom komunikuju monitor a agent (IN PROGRESS - PETO)
+- [ ] Popis novych/zmenenych veci v monitore (IN PROGRESS - PETO)
+- [ ] Popis novych/zmenenych veci v agentovi (IN PROGRESS - PETO)
 - [ ] Detekcie
-- [ ] Databaza - in progress
+- [ ] Databaza (IN PROGRESS - MISO)
 - [ ] Web
 - [ ] Performance
 - [ ] Future work
