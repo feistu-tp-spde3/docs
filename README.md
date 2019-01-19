@@ -48,7 +48,7 @@
     * ..
     * ..
    
-- [ ] Pouzite technologie
+- [X] Pouzite technologie
 - [ ] Architektura systemu
 - [ ] Build agentov
 - [ ] Build monitoru
