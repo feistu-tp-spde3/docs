@@ -54,9 +54,9 @@
 - [ ] Architektura systemu
 - [X] Build agentov
 - [X] Build monitoru
-- [ ] Popis JSON formatu v akom komunikuju monitor a agent
-- [ ] Popis novych/zmenenych veci v monitore
-- [ ] Popis novych/zmenenych veci v agentovi
+- [ ] Popis JSON formatu v akom komunikuju monitor a agent - in progress
+- [ ] Popis novych/zmenenych veci v monitore - in progress
+- [ ] Popis novych/zmenenych veci v agentovi - in progress
 - [ ] Detekcie
 - [ ] Databaza
 - [ ] Web
