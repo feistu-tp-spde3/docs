@@ -56,7 +56,7 @@
 - [X] Build monitoru
 - [ ] Popis JSON formatu v akom komunikuju monitor a agent (IN PROGRESS - MIS(KKKKKKKK)O)
 - [ ] Popis novych/zmenenych veci v monitore (IN PROGRESS/ALMOST DONE - PETO)
-- [X] Popis novych/zmenenych veci v agentovi (IN PROGRESS - PETO)
+- [X] Popis novych/zmenenych veci v agentovi
 - [ ] Detekcie
 - [ ] Databaza (IN PROGRESS - MISO)
 - [ ] Web
