@@ -1,6 +1,7 @@
 # TODO
 
 ## O com chceme pisat dokument (cca)
+* Ponuka
 * Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat
 * Pouzite technologie
 * Architektura celeho systemu
@@ -48,7 +49,9 @@
     * Neposielat pakety ako hexstring, ale binarne
     * Security (SSL/TLS na stranku, sifrovana komunikacia na sieti, certifikaty...)
     * ..
+* Zaver
     
+- [ ] Ponuka
 - [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) (WILL NEED REVIEW)
 - [X] Pouzite technologie
 - [ ] Architektura systemu (IN PROGRESS - MISO)
@@ -62,3 +65,4 @@
 - [ ] Web
 - [ ] Performance
 - [ ] Future work
+- [ ] Zaver
