@@ -54,7 +54,7 @@
 - [ ] Architektura systemu (IN PROGRESS - MISO)
 - [X] Build agentov
 - [X] Build monitoru
-- [ ] Popis JSON formatu v akom komunikuju monitor a agent (IN PROGRESS - MIS(KKKKKKKK)O)
+- [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
 - [ ] Popis novych/zmenenych veci v monitore (IN PROGRESS/ALMOST DONE - PETO)
 - [X] Popis novych/zmenenych veci v agentovi
 - [ ] Detekcie
