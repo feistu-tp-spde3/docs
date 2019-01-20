@@ -72,29 +72,6 @@
 \end{titlepage}
 \newpage
 
-\section*{SÚHRN}
-\pagestyle{empty}
-SLOVENSKÁ TECHNICKÁ UNIVERZITA \\
-FAKULTA ELEKTROTECHNIKY A INFORMATIKY 
-
-\begin{tabbing} 
-	\hspace*{7cm}\= \kill
-	Študijný program:\> Aplikovaná informatika \\
-	Autor:\> Bc. Ivana Jozeková \\
-			\> Bc. Patrik Kadlčík \\
-			\> Bc. Matej Lovász \\
-			\> Bc. Michal Malík \\
-			\> Bc. Peter Malo \\
-			\> Bc. Martin Martiška \\
-	Vedúci záverečnej práce:\> Ing. Štefan Balogh, PhD. \\
-	Miesto a rok predloženia práce:\> Bratislava 2019
-\end{tabbing}
-
-[text]
-\newline \newline
-Kľúčové slová: [text]
-\newpage
-
 \renewcommand{\contentsname}{Obsah}
 \tableofcontents
 \newpage
@@ -201,7 +178,10 @@ Na ovládanie agentov slúži client-cli, pomocou ktorého sa odosielajú príka
 	\item prítomnosť nevhodných programátorských konštruktov a praktík (globálne premenné, konkrétne absolútne cesty v nastaveniach projektu, zbytočné premenné)
 	\item agent-linux je nefunkčný
 	\item odosielanie paketov nefunkčné na niektorých operačných systémoch, ak veľkosť fronty pre pakety presahuje 8192
-	\item nejednotné formátovanie zdrojových kódov \\
+	\item nejednotné formátovanie zdrojových kódov 
+	\item v prípade, že sa na agenta pripojil klient a odpojil sa, už sa naň nemohol pripojiť znovu 
+	\item vytváranie Java procesu na agentovi za účelom poslania paketov 
+	\item zapisovanie paketov do súboru \\
 \end{itemize}
 
 \begin{figure}[h!]
@@ -244,6 +224,7 @@ Na počítačoch v sieti beží agentský program (Agent). Agent je konfigurovat
 Jednou z hlavných úloh agenta je zbierať a posielať sieťovú komunikáciu na server (Collector), ktorý ju vie analyzovať. IP adresa, port Collectoru, veľkosť bufferu a časový interval sú definované v XML súbore. To, aké pakety sú v tejto komunikácii zahrnuté, je konfigurovateľné nastaveným filtrom, ktorý sa dá meniť cez XML súbor alebo cez monitor. Pakety sa posielajú v špecifikovanom formáte na server, ktorý ich spracováva. \\
 
 \noindent \textbf{Časť serveru} \\
+IP serveru je 147.175.98.24. \\
 
 Pakety sú prijímané Java programom \textit{HBaseWriter} počúvajúcim na porte 9999. Tento program parsuje prijaté pakety a zapisuje ich do \textit{HBase} databázy.  Na serveri beží ďalší Java program s názvom \textit{PcapSender}, ktorý pri spustení zo všetkých paketov v \textit{HBase} databáze vytvorí .pcap súbor a pošle ho do špecifikovanej \textit{ActiveMQ} fronty. Detekcia je vykonávaná cez detektory \textit{TCPDetection} a \textit{UDPDetection}, ktoré sa od posledného timového projektu veľmi nezmenili. Tieto detektory sú spustené so zoznamom IP adries, ktoré majú sledovať v paketoch a pri spustení z fronty PCAPS\_TCP resp. PCAPS\_UDP načítajú .pcap súbor, ktorý sparsujú a hľadajú náznaky floodingu. V prípade, že sa v paketoch nájde flood, pripoja sa do MySQL databázy, do ktorej tento fakt zapíšu. \\
 \newpage
@@ -293,12 +274,11 @@ Tento projekt je náhradou predošle platformovo rôzne implementovaných projek
 	\item Monitorovanie bežiacich procesov (definované v xml konfigurácií) 
 	\item Monitorované procesy môžu byť pridané, vymazané a uložené do konfigurácie na požiadavku za behu \\
 \end{itemize}
-
+\newpage
 \begin{figure}[h!]
 	\centering
 	\label{graf1}
 	\includegraphics[scale=0.85]{agent.pdf}
-	%	\caption{Dátový diagram}
 \end{figure}
 
 \textbf{ProcessDiscovery} \\
@@ -354,14 +334,14 @@ Pakety sú oddelené značkou “End of packet” a koniec paketov je označený
 
 Metóda \textit{createConfiguration} berie ako vstupný parameter názov súboru .xml s konfiguráciami agenta. Tieto konfigurácie pošle ďalej triede Configuration, ktorá si ich rozparsuje a uloží. \textit{spawnSniffer} inicializuje objekt PacketSniffer a tým odchytávanie paketov. Táto inicializácia sa deje len raz za beh programu. \textit{spawnCommServer} berie na vstupe číslo portu. Vnútri tejto metódy sa vytvorí vlákno, v ktorom sa v nekonečnom cykle každých 1000 milisekúnd komunikuje prostredníctvom ClientComm s Monitorom. Toto vlákno sa odpojí (detach) a ostáva žiť do konca programu (alebo do systémového prerušenia/nezachytenej chyby). Vo funkcii \textit{run} sa spracúvajú v nekonečnej slučke každých 100 milisekúnd správy z triedy ClientComm. Z príchodzej json správy sa vyparsuje informácia o príkaze a ten sa následne spustí. Momentálne sa podporujú príkazy na overenie pripojenia (ping), vypnutie (stop) a zapnutie (start) sniffera, nastavenie a vypísanie filtra počas behu (filter get/filter set) a správu sledovania procesov (pridávanie, mazanie, získanie stavu - proc add / proc del / proc get). Viac o formáte, v akom sú príkazy prijímané tu: \\
 
-\begin{figure}[h!]
+\begin{figure}[t]
 	\centering
 	\label{graf1}
 	\includegraphics[scale=0.75]{graf2.jpg}
 	\caption{Vylepšenie výkonnosti agenta po aplikovaných zmenách}
 \end{figure}
-
-\subsection{Konfigurácia}
+\newpage
+\subsection{Konfigurácia agenta}
 
 Tvar: \\ 
 \begin{lstlisting}
@@ -403,7 +383,7 @@ Agent má nastavenia \textit{Name}, ktoré udáva meno agenta. \textit{Filter} n
 	\includegraphics[scale=0.75]{uk2.jpg}
 	\caption{Ukážka spustenia agenta na Linuxe}
 \end{figure}
-
+\newpage
 \section{Zmeny klienta}
 
 Tento komponent sme premenovali na Monitor, pretože Client je veľmi mätúci názov a neodráža to, čo sa pomocou tohto nástroja vykonáva. \\
@@ -429,7 +409,7 @@ Tento komponent sme premenovali na Monitor, pretože Client je veľmi mätúci n
 	\item nový príkaz "proc" na vyžiadanie stavu, pridanie alebo odobratie monitorovaných procesov (get vyžiada stav - môže byť running(bežiaci)/not running(nebežiaci)) 
 	\item stavy agentov a monitorované procesy sú periodicky aktualizované v databáze \\
 \end{itemize}
-
+\newpage
 \begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.75]{monitor.pdf}
@@ -490,7 +470,6 @@ proc <agent> get|add <process>|del <process> -> manipulate monitored processes o
 \subsection{Konfigurácia}
 
 Tvar: \\ 
-
 \begin{lstlisting}
 <Configuration> 
 	<MysqlDatabase> 
@@ -606,10 +585,7 @@ Odpoveď agenta na požiadavku od monitoru je veľmi jednoduchá, pretože agent
 \section{Zmeny HBaseWriter} 
 HBaseWriter je hlavná časť serveru, ktorá prijíma pakety od agentov. Pretože sa trochu menil formát, v akom agent posiela pakety, jeho parsovanie sa muselo zmeniť aj tu. Predošlý agent zapisoval pakety na poslanie do súboru, potom vytvoril Java proces \textit{HBaseSender} (túto časť už nepoužívame), ktorý tento súbor prečítal a následne odoslal jeho obsah do \textit{HBaseWriter} na server. \\
 	
-Keďže náš agent už posiela pakety z pamäte a nie zo súboru, museli sme odstrániť \textit{carriage return} (\r znak) z parsovania v \textit{HBaseWriter}. Stretli sme sa s ďalším problémom, kde predošlý \textit{HBaseSender} posielal obsah prečítaného súboru cez \textit{DataOutputStream} v Jave a \textit{HBaseWriter} ho prijímal cez \textit{DataInputStream}. Tento spôsob garantoval, že sa pakety od agenta príjmu naraz. No keďže náš agent posiela pakety cez \textit{boost tcp socket}, nie je garantované, že prídu naraz, na čo bol \textit{HBaseWriter} stavaný. Preto, keď agent ide poslať pakety, najprv pošle 4 bajty (integer), ktoré reprezentujú veľkosť dát, ktoré ide poslať, aby \textit{HBaseWriter} vedel koľko bajtov má čítať. Toto môžeme vidieť v nasledujúcom kóde:
-
- %KOOOOOOOOOOOOOOOOOOOOOOOD
- 
+Keďže náš agent už posiela pakety z pamäte a nie zo súboru, museli sme odstrániť \textit{carriage return} (\r znak) z parsovania v \textit{HBaseWriter}. Stretli sme sa s ďalším problémom, kde predošlý \textit{HBaseSender} posielal obsah prečítaného súboru cez \textit{DataOutputStream} v Jave a \textit{HBaseWriter} ho prijímal cez \textit{DataInputStream}. Tento spôsob garantoval, že sa pakety od agenta príjmu naraz. No keďže náš agent posiela pakety cez \textit{boost tcp socket}, nie je garantované, že prídu naraz, na čo bol \textit{HBaseWriter} stavaný. Preto, keď agent ide poslať pakety, najprv pošle 4 bajty (integer), ktoré reprezentujú veľkosť dát, ktoré ide poslať, aby \textit{HBaseWriter} vedel koľko bajtov má čítať. \\
  
 \noindent Okrem spomenutých problémov sme v HBaseWriter nič na funkcionalite nemenili, no boli trochu upravené správy, ktoré sa vypisujú na obrazovku. \\
  
@@ -676,7 +652,7 @@ Výsledky detekcie sa zapisujú do databázy do tabuľky \textit{udp\_flood}. S�
 \section{Databáza}
 Ako databázu sme použili MySQL, ktorá beží na serveri. Databázu tvoria 4 tabuľky: agents, processes, tcp\_flood a udp\_flood. Vo väčšine tabuliek používame stĺpec pre IP adresu, ktorej typ je varchar(15). Toto je z dôvodu jednoduchosti a uvedomujeme si, že to mohol byť dátový typ integer a manipulácia s ním mohla byť pomocou MySQL funkcii INET\_ATON() a INET\_NTOA(). \\
 
-\textbf{agents} \\
+\noindent \textbf{agents} \\
 
 Táto tabuľka je napĺňaná z monitoru. Reprezentuje všetkých agentov, ktorí kedy boli monitorovaní. Status agentov je sprevádzaný časom, kedy bol status obnovený. Keďže status agenta je možné zmeniť len prostredníctvom monitoru (t.j. ak je monitor pripojený na agenta, status agenta je periodicky obnovovaný a pri jeho zmene sa zmení status a čas v databáze). \\
 
@@ -690,7 +666,7 @@ ip: varchar(15) \\
 status: tinyint \\
 last\_updated: timestamp \\
 
-\textbf{processes} \\
+\noindent \textbf{processes} \\
 
 Taktiež napĺňaná z monitoru. Reprezentuje všetky monitorované procesy na všetkých agentoch. Jej schéma je nasledovná: \\
 
@@ -712,7 +688,7 @@ port: int \\
 value: int \\
 timestamp: timestamp \\
 
-\textbf{udp\_flood} \\
+\noindent \textbf{udp\_flood} \\
 
 Do tabuľky sa zapisuje len keď je TISMA systémom zistený UDP flooding na analyzovaných paketoch. \\
 
@@ -797,7 +773,6 @@ else ()
 endif ()
 \end{lstlisting}
 
-\\
 Nastavenie boostu  \\
 set (Boost\_USE\_STATIC\_LIBS OFF) \\
 set (Boost\_USE\_MULTITHREADED ON) \\
@@ -856,14 +831,8 @@ endif ()
 Cieľom tohto tímového projektu bolo spevniť existujúce základy, ktoré vytvorili predošlé tímy. Toto sme dosiahli veľkými zmenami v jadre agenta a monitoru, ktoré nám umožnili zjednotiť zdrojový kód pre Windows aj Linux, použiť rovnakú knižnicu na zachytávanie sieťovej komunikácie, ktorá má rovnakú filter syntax apod. Použitie JSON v komunikácii medzi agentom a monitorom výrazne zjednoduší prácu pre budúce tímy, ak budú chcieť pridávať nové príkazy. Taktiež sme do infraštruktúry zakomponovali MySQL databázu, pomocou ktorej monitorujeme status agentov, bežiace procesy na nich a detegované útoky na agentov. V základnej konfigurácii sme dosiahli žiadne zaťaženie systému, na ktorom beží agent. \\
 \newpage
 
-\section*{Zoznam použitej literatúry}
-\addcontentsline{toc}{section}{Zoznam použitej literatúry}
-
-\newpage
-
 \section*{Prílohy}
 \pagenumbering{Roman}
 \addcontentsline{toc}{section}{Prílohy}
 
-\newpage
 \end{document}
