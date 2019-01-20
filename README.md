@@ -57,7 +57,7 @@
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
 - [X] Popis novych/zmenenych veci v monitore
 - [X] Popis novych/zmenenych veci v agentovi
-- [ ] Detekcie
+- [ ] Detekcie (IN PROGRESS - MISO)
 - [X] Databaza
 - [ ] Web
 - [ ] Performance
