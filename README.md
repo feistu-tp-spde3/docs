@@ -63,7 +63,7 @@
 - [X] Zmeny v HBaseWriter
 - [X] Detekcie
 - [X] Databaza
-- [ ] Web
+- [ ] Web (IN PROGRESS)
 - [ ] Performance
 - [ ] Future work
-- [ ] Zaver
+- [ ] Zaver (IN PROGRESS - MISO)
