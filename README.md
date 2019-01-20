@@ -57,7 +57,7 @@
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
 - [X] Popis novych/zmenenych veci v monitore (WILL NEED REVIEW)
 - [X] Popis novych/zmenenych veci v agentovi (WILL NEED REVIEW)
-- [ ] Detekcie (IN PROGRESS - MISO)
+- [X] Detekcie
 - [X] Databaza
 - [ ] Web
 - [ ] Performance
