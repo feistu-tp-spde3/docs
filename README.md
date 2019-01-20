@@ -51,19 +51,20 @@
     * ..
 * Zaver
     
+- [ ] Uvod
 - [ ] Ponuka
 - [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) (WILL NEED REVIEW)
-- [X] Pouzite technologie
 - [X] Architektura systemu
-- [X] Build agentov
-- [X] Build monitoru
+- [X] Pouzite technologie
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
 - [X] Popis novych/zmenenych veci v monitore (WILL NEED REVIEW)
 - [X] Popis novych/zmenenych veci v agentovi (WILL NEED REVIEW)
 - [X] Zmeny v HBaseWriter
 - [X] Detekcie
 - [X] Databaza
-- [ ] Web (IN PROGRESS)
-- [ ] Performance
+- [X] Web
+- [X] Build agentov
+- [X] Build monitoru
+- [ ] Performance (???)
 - [ ] Future work
 - [ ] Zaver (IN PROGRESS - MISO)
