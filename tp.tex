@@ -249,6 +249,190 @@ set (LIBS /usr/lib/i386-linux-gnu/libmysqlcppconn.so) \\
 endif () \\
 
 
+\section{Technológie}
+
+\subsection{Libpcap}
+
+Takzvaná Packet Capture library ponúka vysokoúrovňový interfejs pre systémy využívajúce odchytávanie paketov. Dajú sa vďaka nej odchytávať všetky pakety v sieti, vrámci tých, ktoré sú odosielané cudziemu hostiteľovi. Podporuje ukladanie a následné načítanie paketov zo súboru.
+
+\subsection{Npcap}
+
+Knižnica vytvorená vrámci projektu Nmap, pre odchytávanie (anglicky sniffing) sieťových paketov na Windowse. Je založená na WinPcap / Libpcap knižniciach, s vylepšeným výkonom, bezpečnosťou a efektívnosťou. Výhodou využitia Libpcap a Npcap je ich spoločná kompatibilita, čo umožňuje efektívnejšie a čistejšie zjednotenie zdrojového kódu pre rôzne platformy (Linux aj Windows).
+
+\subsection{Boost}
+
+Pravdepodobne najrozmanitejšia knižnica pre jazyk C++, z ktorej sa často čerpajú technológie aj do C++ štandardu. V našom prípade sme používali verziu 1.68.0 (vydaná 9.8.2018). Využívali sme asio (asynchronous input/output - sieťová komunikácia), chrono (práca s časom), thread (vlákna), filesystem (súborový systém).
+
+\subsection{MySQL Connector C++}
+
+Táto knižnica poskytuje API pre MySQL databázu (na princípe JDBC). Umožňuje pripojiť sa na lokálnu, ale aj vzdialenú databázu, vykonávať SQL príkazy a menežovať spojenie. Pre náš projekt sme využívali verziu 8.0.
+
+\subsection{Nlohmann}
+
+Rýchla, pamäťovo efektívna, jednoducho použiteľná, flexibilná knižnica pre prácu s formátom Json v jazyku C++. 
+
+\section{Agent}
+
+Tento projekt je náhradou predošle platformovo rozne implementovaných projektov Agent Windows a Agent Linux. 
+
+štruktúra projektu:
+- Agent: projektové súbory visual studia (.sln, .vxcproj ...)
+- src: zdrojové kódy - .hpp aj .cpp
+- CMakeLists.txt – cmake pre kompiláciu na linuxe
+- Readme.md – informácie o projekte
+- config\_agent.xml
+
+Prehľad rozsiahlych zmien a novej funkcionality:
+- jednotný zdrojový kód pre Linux a Windows
+- použitá knižnica Npcap (https://nmap.org/npcap/) pre konzistentnú syntax filtrov (https://linux.die.net/man/7/pcap-filter)
+- Pakety sa odosielajú z pamäte namiesto čítania zo súboru a následného vytvárania Java procesu na odoslanie
+-  Obojsmerná komunikácia s monitorom (predošle monitor -> agent)
+- Komunikačný formát JSON (predošle: obyčajný text)
+- Znovuvytvorenie počúvania na monitor pri odpojení z monitora (predošle: iba jedna inštancia pripojenia monitora na agenta mohla prebehnúť za jeho beh)
+- Monitorovanie bežiacich procesov (definované v xml konfigurácií)
+- Monitorované procesy môžu byť pridané, vymazané a uložené do konfigurácie na požiadavku za behu
+
+ProcessDiscovery
+
+Slúži na zistenie stavu procesu. Rôzna implementácia pre Windows aj Linux, keďže zisťovanie informácií o procesoch je platformovo závislá záležitosť. Používa sa funkcia isProcessRunning, ktorej vstupom je názov procesu. Vracia sa bool hodnota podľa toho, či daný proces beží, alebo nie. Implementácia na Windowse využíva Windows API, pomocou ktorej sa iteruje cez bežiace procesy a porovnáva sa názov exekuovateľného súboru s tým, ktorý hľadáme. 
+
+Na Linuxe sme pridali funkciu getProcessPidByName, ktorej vstupom je názov procesu a vracia pid príslušného procesu alebo -1, ak sa daný proces nenašiel. Vyhľadávanie pidu sa deje pomocou prechádzania adresára /proc/. Samotná funkcia isProcessRunning v tomto prípade kontroluje, či funkcia getProcessPidByName vrátila valídny pid a následne sa zavolá systémová operácia kill so signálom 0 (prázdny signál) a očakáva sa návratová hodnota 0 (znamená, že daný proces beží a je možné nad ním zavolať kill).
+
+Collector
+
+Slúži na odosielanie paketov na server
+V konštruktore sa nastavuje ip adresa a port. Funkcia send dostáva na vstup inštanciu triedy ClientComm, dáta (string) a premennú typu size\_t, do ktorej sa uloží počet odoslaných bajtov, vracia sa bool hodnota podľa úspechu alebo neúspechu odosielania. Mechanizmus odosielania je nasledovný – nadviaže sa spojenie, odošle sa číslo (štyri bajty), ktoré reprezentujú, koľko dát sa má odoslať a nakoniec sa odošlú samotné dáta.
+
+V main funkcií:
+- vytvorí sa objekt Agent
+- vytvorí sa konfigurácia (createConfiguration)
+- Agent zavolá spawnSniffer – inicializácia odchytávania paketov
+- vytvorí sa komunikačný server na porte 8888 (spawnCommServer)
+- zavolá sa run
+
+Configuration
+
+Uchováva a menežuje konfiguráciu agenta. Okrem metód na vyžiadanie jednotlivých parametrov (get) obsahuje metódu na parsovanie konfiguračného súboru z disku pod názvom parse, kde vstupom je názov súboru a vracia sa hodnota bool podľa úspešnosti operácie. Ďalej obsahuje metódy na pridanie (addMonitoredProcess), mazanie(removeMonitoredProcess) procesov, nastavovanie filtra (setAgentFilter) a na ukladanie konfigurácie (saveConfig).
+
+ClientComm
+
+Riadi komunikáciu s Monitorom (postarom Client). Konštruktor nastavuje premenné konfigurácie, mutex a vytvorí sa shared\_ptr z io\_service. Funkcia waitForClient čaká na spojenie s Monitorom. Vstupným argumentom je port, na ktorom sa má počúvať. waitForClient vytvorí UDP spojenie na porte a čaká na konekciu (maximálne jednu), potom sa vypne. Konekcia sa inicializuje až po identifikačnom „handshake“ (podanie rúk), ktorý obsahuje reťazec „agentSearch“. connect slúži na inicializáciu TCP spojenia po handshake. Číslo portu je odosielané tou stranou, ktorá inicializuje spojenie (správa v tvare agentSearch/<port>). Funkcia sendMsg slúži na odosielanie správy, ktorú dostáva na vstup a vracia úspešnosť akcie odosielania (bool – true pri úspechu, inak false). 
+
+PacketSniffer
+
+Trieda, ktorá slúži na odchytávanie sieťových paketov. Pri konštrukcií sa nastaví premenná typu Configuration, ClientComm a mutex. Funkcia init slúži na vypísanie všetkých dostupných zariadení na odchytávanie paketov a nechá užívateľa vybrať, na ktorom sa bude odchytávať. Tento mechanizmus je prítomný pretože sa stáva, že na niektorých počítačoch je prítomný len Npcap a keby sa vyberalo zariadenie automacky, vyberie sám seba. Funkcia start naštartuje odchytávanie v novom vlákne. Toto vlákno má na startosi odchytávanie paketov, ich prasovanie, prebalovanie do formátu na odoslanie a samotné odosielanie. Funkcia stop zastavuje vlákno na odchytávanie a odosielanie paketov. Pomocou funkcií setFilter a getFilter môžeme nastaviť alebo získať momentálne nastavenie filtrov. 
+
+Agent
+
+Metóda createConfiguration berie ako vstupný parameter názov súboru .xml s konfiguráciami agenta. Tieto konfigurácie pošle ďalej triede Configuration, ktorá si ich rozparsuje a uloží. spawnSniffer inicializuje objekt PacketSniffer a tým odchytávanie paketov. Táto inicializácia sa deje len raz za beh programu. spawnCommServer berie na vstupe číslo portu. Vnútri tejto metódy sa vytvorí vlákno, v ktorom sa v nekonečnom cykle každých 1000 milisekúnd komunikuje prostredníctvom ClientComm s Monitorom. Toto vlákno sa odpojí (detach) a ostáva žiť do konca programu (alebo do systémového prerušenia/nezachytenej chyby). Wo funkcií run sa spracúvajú v nekonečnej slučke každých 100 milisekúnd správy z triedy ClientComm. Z príchodzej json správy sa vyparsuje informácia o príkaze a ten sa následne spustí. Momentálne sa podporujú príkazy na overenie pripojenia, vypnutie a zapnutie sniffera, nastavenie filtra (počas behu) a správu sledovania procesov (pridávanie, mazanie, získanie stavu).
+
+\subsection{Konfigurácia}
+
+Tvar: \\ \\
+
+<Configuration> \\
+<Sender> \\
+<BufferSize>128000</BufferSize> \\
+<Interval>10</Interval> \\
+<Collector>ip:port</Collector> \\
+</Sender> \\
+<Agent> \\
+<Name>AgentA</Name> \\
+<Filter>tcp or udp</Filter> \\
+<MonitoredProcesses> \\
+<Process>hello.exe</Process> \\
+<Process>world.exe</Process> \\
+</MonitoredProcesses> \\
+<SniffInterval>1000</SniffInterval> \\
+<SniffSnapLen>2048</SniffSnapLen> \\
+<SniffPromiscMode>false</SniffPromiscMode> \\
+</Agent> \\
+</Configuration> \\ \\
+
+V konfigurácií agenta máme dva základné komponenty a to Sender – nastavenie odosielania na kolektor paketov a Agent – nastavenia špecifické agentovi a jeho funkcií.
+V Sender nastaveniach sa určuje BufferSize, ako meno naznačuje ide o veľkosť buffera (v bajtoch), do ktorého sa vkladajú pakety. Interval udáva počet sekúnd, po ktorých prebehne replikácia. Element Collector obsahuje adresu a port, na ktorú sa má agent pripájať a pakety odosielať. \\
+
+Agent má nastavenia Name, ktoré udáva meno agenta. Filter nastavuje filtrovanie paketov. Do MonitoredProcesses máme možnosť zadávať procesy, ktoré chceme monitorovať (pre tvar zadávania viď príklad tvaru). SniffInterval udáva interval (v milisekundách), v ktorom sa odchytávajú pakety. SniffSnapLen určuje aká časť paketu sa má odchytiť (v bajtoch). SniffPromiscMode popisuje, stav promiskuitného módú (zapnutý/vypnutý – true/false).
+
+
+\section{Monitor}
+
+Tento komponent sme premenovali na Monitor, pretože client je veľmi mätúci názov a neodráža to, čo sa pomocou tohoto nástroja vykonáva.
+
+Zmenila sa taktiež štruktúra projektu ktorá vyzerá momentálne nasledovne:
+- Client: projektové súbory visual studia (.sln, .vxcproj ...)
+- src: zdrojové kódy - .hpp aj .cpp
+- CMakeLists.txt – cmake pre kompiláciu na linuxe
+- Readme.md – informácie o projekte
+- config\_monitor.xml – konfigurácia monitoru
+
+Prehľad rozsiahlych zmien a novej funkcionality:
+
+- Pripojenie na Mysql databázu
+- Obojsmerná komunikácia s agentmi (predošle iba monitor -> agent)
+- Zavedený komunikačný formát JSON (predošle: obyčajný text)
+- Pridaný príkaz "discover" na vyhľadanie agentov v sieti (predošle sa tento proces dial len pri spustení programu)
+- Pridaný príkaz "list", ktorý vypíše pripojených agentov, skontroluje ich stav and aktualizuje ho v databáze
+- Pridaný príkaz "filter get“, ktorý vypíše nastavenia filtra na konkrétnom agentovi
+- Príkaz "filter set" informuje používateľa, či sa daný filter podarilo aplikovať
+- Nový príkaz "proc" na vyžiadanie stavu, pridanie alebo odobratie monitorovaných procesov (get vyžiada stav - môže byť running(bežiaci)/not running(nebežiaci))
+- Stavy agentov a monitorované procesy sú periodicky aktualizované v databáze
+
+Trieda AgentManager
+
+Ako názov naznačuje, táto trieda slúži na menežment, či riadenie agentov v sieti. Boli do nej zakomponované komponenty, ktoré sa nachádzali v projekte ako samostatné triedy.
+
+AgentManager má v sebe inštanciu objektu Configuration, ktorá udržiava konfigurácie načítané z .xml súboru, inštanciu objektu MySqlJdbcConnector pre prístup do databázy a mapovanie názvov agentov na konekcie k nim.
+
+Pri vytváraní objektu sa v konštruktore nastaví inštancia konektora na databázu a dva porty (jeden pre odosielanie dát ohľadom procesov, ktorých stav sa po novom monitoruje a ďalší, serverový port). 
+
+Jednou z nových funkcionalít je aj pridanie konfigurácie (podobne ako v projekte Agent) a jej načítanie pomocou funkcie loadConfiguration, ktorá ako vstupný parameter berie relatívnu cestu k .xml súboru s konfiguráciou a vracia hodnotu true/false podľa toho, či sa daná konfigurácia načítala správne alebo nie.
+
+Na pripojenie sa k databáze sa využíva funkcia connectToDb, ktorá je v podstate iba premostením funkcie triedy MySqlJdbcConnector, ale zároveň kontroluje, či pripojenie prebehlo úspešne a podľa toho vracia pravdivostnú hodnotu. Na vkladanie do databázy sa používa prepared statement, ktorý je rýchlejší než klasický statement a taktiež zamedzuje SQL injection, keďže vstupné hodnoty sa vkladajú namiesto zástupcov a taktiež sa korektne spracúvaju špeciálne znaky.
+
+Funkcia discoverAgents slúži na vyhľadanie agentov v sieti, presnejšie odošle UDP broadcast, na ktorý agenti neskôr reagujú.
+
+Celý proces sieťovej komunikácie sa spúšta až funkciou run. V tejto funkcií sa inicializuje acceptor na tvorbu spojení, inicializuje sa hlavné vlákno (m\_main\_thread), v ktorom beží v nekonečnej slučke počúvanie na pokus o vytvorenie nového spojenia s agentom. Po vytvorení úspešného spojenia sa spojenie pridá do mapovania spojení a aktualizuje sa časový údaj o spojení v databáze. Ako ďaľšie sa spúšťa vlákno, ktoré udržiava spojenie s databázou a aktualizuje stavy agentov a sledovaných procesov. Nad týmto vláknom sa volá metóda detach(), keďže chceme, aby vlákno pracovalo na pozadí až do terminácie programu.
+
+Na možnosť obojsmernej komunikácie s agentmi sa pridala k funkcií na odosielanie (sendMessage) funkcia na príjmanie (recvMessage).
+
+Configuration
+
+Má za úlohu načítať a udržať stav konfigurácie pre Monitor. Na načítavanie slúži funkcia parse, ktorá ako vstup dostáva relatívnu cestu k .xml súboru. Načíta jednotlivé hodnoty z konfigurácie a vráti true ak všetko prebehlo v poriadku, inak false. Ďalej sa v tejto triede nachádzajú get metódy pre všetky definované konfigurácie.
+
+MySqlJdbcConnector
+
+Slúži ako spojka medzi monitorom a databázou. Udržiava v sebe pointer na driver a konekciu. funkcia connect so vstupným parametrom triedy Configuration má za úlohu pripojenie na databázu, pričom prístupové údaje, sieťovú adresu a meno databázy berie z konfigurácie. Podľa úspešnosti pripojenia vracia bool. Bolo potrebné vytvoriť aj funkciu tryReconnect, ktorá overí, či spojenie stále existuje a ak neexistuje, pokúsi sa pripojiť znova. Potreba vychádzala z faktu, že po určitej dobe sa pripojenie zhadzovalo. Na vytváranie SQL príkazov sa používajú funkcie createStatement a prepareStatement, ktoré vracajú unikátny pointer na daný typ výroku. 
+
+CmdLine
+
+Pri konštrukcií je potreba posunúť ako argument AgentManager, ktorého referencia sa uloží. Funkcionalita CmdLine sa spúšta pomocou metódy run, ktorá spustí hlavné vlákno, ktoré beží v nekonečnej slučke, spracúva zadané príkazy a deleguje funkcionalitu na príslušné funkcie podľa zadaných príkazov. Dostupné príkazy umožňujú spustiť, zastaviť odchytávanie paketov, nastavenie alebo získanie aktuálneho nastavenia filtra, výpis stavu sledovaných procesov, pridanie alebo mazanie sledovaného procesu.  
+
+V main funkcií Monitora prebiehajú nasledujúce kroky:
+- vytvorenie objektu AgentManager, discover port sa nastavuje na 8888 a server port na 9999.
+- manager zavolá načítanie konfigurácie
+- manager sa pripojí na databázu
+- manager zavolá funkciu discoverAgents
+- zavolá sa run
+- vytvorí sa objekt CmdLine
+- zavolá sa run
+- na konci prebieha synchronizácia vláken z oboch objektov.
+
+\subsection{Konfigurácia}
+
+Tvar:
+
+<Configuration> \\
+<MysqlDatabase> \\
+<Url>tcp://host:port</Url> \\
+<User>user</User> \\
+<Password>password</Password> \\
+<Name>database\_name</Name> \\
+</MysqlDatabase> \\
+<UpdateInterval>10</UpdateInterval> <!-- Seconds --> \\
+</Configuration> \\
+
+Element MysqlDatabase obsahuje údaje potrebné na pripojenie sa k MySQL databáze a prepnutie sa na konkrétnu databázu. Na pripojenie sa je potrebná adresa (element Url), používateľ v databáze (User), používateľské heslo (Password) a názov schémy respektíve databázy (Name). Element UpdateInterval udáva počet sekúnd, po ktorých sa vyžiada stav agentov z monitora.
 
 
 \section*{Záver}
