@@ -58,7 +58,7 @@
 - [X] Popis novych/zmenenych veci v monitore
 - [X] Popis novych/zmenenych veci v agentovi
 - [ ] Detekcie
-- [ ] Databaza (IN PROGRESS - MISO)
+- [X] Databaza
 - [ ] Web
 - [ ] Performance
 - [ ] Future work
