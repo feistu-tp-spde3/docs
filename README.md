@@ -54,7 +54,7 @@
 - [ ] Ponuka
 - [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) (WILL NEED REVIEW)
 - [X] Pouzite technologie
-- [ ] Architektura systemu (IN PROGRESS - MISO)
+- [X] Architektura systemu
 - [X] Build agentov
 - [X] Build monitoru
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
