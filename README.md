@@ -49,13 +49,13 @@
     * ..
     * ..
     
-- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat   
+- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat (IN PROGRESS - PETO)  
 - [X] Pouzite technologie
 - [ ] Architektura systemu (IN PROGRESS - MISO)
 - [X] Build agentov
 - [X] Build monitoru
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
-- [ ] Popis novych/zmenenych veci v monitore (IN PROGRESS/ALMOST DONE - PETO)
+- [X] Popis novych/zmenenych veci v monitore
 - [X] Popis novych/zmenenych veci v agentovi
 - [ ] Detekcie
 - [ ] Databaza (IN PROGRESS - MISO)
