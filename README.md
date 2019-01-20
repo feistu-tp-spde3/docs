@@ -49,14 +49,14 @@
     * Security (SSL/TLS na stranku, sifrovana komunikacia na sieti, certifikaty...)
     * ..
     
-- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) 
+- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) (WILL NEED REVIEW)
 - [X] Pouzite technologie
 - [ ] Architektura systemu (IN PROGRESS - MISO)
 - [X] Build agentov
 - [X] Build monitoru
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
-- [X] Popis novych/zmenenych veci v monitore
-- [X] Popis novych/zmenenych veci v agentovi
+- [X] Popis novych/zmenenych veci v monitore (WILL NEED REVIEW)
+- [X] Popis novych/zmenenych veci v agentovi (WILL NEED REVIEW)
 - [ ] Detekcie (IN PROGRESS - MISO)
 - [X] Databaza
 - [ ] Web
