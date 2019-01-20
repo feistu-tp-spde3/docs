@@ -167,6 +167,90 @@ Absolvent bakalárskeho štúdia na FEI STU v Bratislave, v študijnom programe 
 \section{Výsledky}
 \newpage
 
+%-------------------------------- TODO: Zaradit do textu, skontrolovat pravopis, stylistiku a upravit formatovanie
+\section{Kompilácia a prostredie}
+
+\subsection{Agent}
+
+Kompilácia agenta bola pozmenená, keďže sa pridali nové knižnice a zjednotil sa zdrojový kód pre obe platformy (Windows aj Linux).
+
+\subsubsection{Windows}
+
+Na Windowse je ku kompilácií potrebné Microsoft Visual Studio 2017 (v141).
+Potrebné sú knižnice boost (verzia 1.68.0), Npcap a NPCAP SDK. Je potrebné ich rozbaliť  a nainštalovať (na ľubovoľné miesto na disku).  Pri knižnici Npcap je potreba zvoliť „Winpcap compact mode“. Ak už máme knižnice pripravené, pridáme do systémových premenných prostredia hodnoty BOOST\_INCLUDE\_PATH, BOOST\_LIB\_PATH, NPCAP\_INCLUDE\_PATH, NPCAP\_LIB\_PATH a nastavíme ich, aby ukazovali na include alebo library cestu danej knižnice.
+\\
+Príklad: \\
+BOOST\_INCLUDE\_PATH=C:$\textbackslash$boost\_1\_68\_0\_32 \\
+BOOST\_LIB\_PATH=C:$\textbackslash$boost\_1\_68\_0\_32$\textbackslash$lib32-msvc-14.1 \\
+NPCAP\_INCLUDE\_PATH=C:$\textbackslash$npcap$\textbackslash$Include \\
+NPCAP\_LIB\_PATH=C:$\textbackslash$npcap$\textbackslash$Lib \\
+\\
+Na kompilovanie treba otvoriť .sln súbor, ktorý sa nachádza medzi súbormi projektu, pomocou Visual Studia. V pravo máme okno „Solution Explorer“, v ktorom máme položku projektu („Agent“). V nastaveniach projektu je potrebné pridať knižnice, ktoré využívame. Navigujeme:
+Right-click „Agent“ $\rightarrow$ Properties $\rightarrow$ Configuration Properties $\rightarrow$ VC++ Directories.
+Pred tým, než začneme pridávať nastavenia je potrebné sa uistiť, že máme v hornej lište nastavené políčko “Configuration” na “All Configurations” a “Platform” na “Win32”. Pridáme do tabuľky „General“ v riadku pre „Include directories“ cesty pre include našich knižníc - \$(BOOST\_INCLUDE\_PATH);\$(NPCAP\_INCLUDE\_PATH);  a do „Library directories“ \$(BOOST\_LIB\_PATH);\$(NPCAP\_LIB\_PATH);. 
+
+\subsubsection{Linux}
+
+Na Linuxe je potreba kompilátora gcc (verzia 5.1 a vyššia), rovnako ako pri Windowse nainštalujeme knižnice boost (ľubovoľný spôsob inštalácie) a libpcap pomocou príkazu sudo apt-get install automake libpcap-dev build-essential.
+Ak sme boost kompilovali sami, treba v súbore CMakeLists.txt zmeniť set (BOOST\_ROOT "/home/user/boost\_1\_68\_0") tak, aby ukazoval na miesto, kde sme zdrojové súbory vykompilovali. Ak sme boost nekompilovali sami, tak zmeníme v tom istom súbore hodnotu set (Boost\_NO\_SYSTEM\_PATHS TRUE) na FALSE.
+\\
+Po vykonaní všetkých týchto inštrukcií, stačí použiť príkazy „cmake .“ a následne „make“ v adresári so súborom CMakeLists.txt, čím sa nám zdrojový kód skompiluje.
+\\
+\\
+\textbf{CMake} \\
+%-------------------- cmake treba naformatovat do kodoveho stylu
+Pridané zdrojové súbory (zvlášť .hpp a .cpp) \\
+file (GLOB CPP\_FILES src/*.cpp) \\
+file (GLOB HPP\_FILES src/*.hpp) \\
+\\
+set (SOURCE\_FILES \$\{CPP\_FILES\} \$\{HPP\_FILES\}) \\
+\\
+Nastavenie libpcap symbolového súboru \\
+if (EXISTS /usr/lib/x86\_64-linux-gnu/libpcap.so) \\
+set (LIBS /usr/lib/x86\_64-linux-gnu/libpcap.so) \\
+else () \\
+set (LIBS /usr/lib/i386-linux-gnu/libpcap.so) \\
+endif () \\
+\\
+Nastavenie boostu  \\
+set (Boost\_USE\_STATIC\_LIBS OFF) \\
+set (Boost\_USE\_MULTITHREADED ON) \\
+set (Boost\_USE\_STATIC\_RUNTIME OFF) \\ \\
+find\_package(Boost 1.68.0 COMPONENTS system filesystem chrono thread) \\ \\
+Na konci sa naviažu zdrojové súbory \\
+add\_executable(\$\{TARGET\_NAME\} \$\{SOURCE\_FILES\}) \\
+Nalinkujú sa knižnice  \\
+target\_link\_libraries(\$\{TARGET\_NAME\} \$\{LIBS\} \$\{Boost\_LIBRARIES\}) \\
+A nazáver sa nastaví kompilácia \\
+target\_compile\_options(\$\{TARGET\_NAME\} PRIVATE -std=c++11) \\
+
+\subsection{Monitor}
+
+Potreba Microsoft Visual Studia (Windows), gcc (Linux) a knižnice boost (viď sekcia kompilácie Agenta) a navyše je potrebný MySQL Connector pre C++ (verzia 8.0).
+
+\subsubsection{Windows}
+
+Na Windowse vytvoríme pre cesty k include a library systémové premenné prostredia MYSQL\_CONNECTOR\_INCLUDE\_PATH a MYSQL\_CONNECTOR\_LIB\_PATH. \\ \\
+Príklad: \\
+MYSQL\_CONNECTOR\_INCLUDE\_PATH=C:$\textbackslash$mysql-connector-c++-8.0.13-win32$\textbackslash$include \\
+MYSQL\_CONNECTOR\_LIB\_PATH=C:$\textbackslash$mysql-connector-c++-8.0.13-win32$\textbackslash$lib$\textbackslash$vs14 \\ \\
+Tieto hodnoty pridáme do nastavení projektu (podobne ako v časti pre Agenta) - Right-click project $\rightarrow$ Properties $\rightarrow$ Configuration Properties $\rightarrow$ VC++ Directories, kde pridáme do „Include Directories“ \$(MYSQL\_CONNECTOR\_INCLUDE\_PATH); a do “Library directories” \$(MYSQL\_CONNECTOR\_LIB\_PATH);. Následne navigujeme od Configuration Properties -> Linker -> General a pridáme do poľa „Additional Library Dependencies“ hodnotu \$(MYSQL\_CONNECTOR\_LIBRARY\_PATH);. Prepneme cez Linker $\rightarrow$ Input a do “Additional Dependencies” pridáme názov knižnice „mysqlcppconn.lib“. \\ 
+Na to aby sme mohli program spúšťať, musíme do súboru s vygenerovaným .exe súborom ešte pridať knižnice mysqlcppconn-7-vs14.dll, ssleay32.dll, libeay32.dll (z MySQL Connectora).
+
+\subsubsection{Linux}
+
+Na Linuxe je postup identický s postupom kompilácie agenta, akurát je potreba doinštalovať spomínaný Connector pre MySQL (Poznámka: Ak používame Debian, nesmie sa používať inštalácia z repozitára!). Kompiláciu stačí spustiť pomocou príkazov „cmake .“, potom „make“. \\ \\
+\textbf{CMake} \\ \\
+Veľmi podobná štruktúra ako pri Agentovi – rovnaké nastavenie boostu, vyhľadávanie komponentov, až na symbolový súbor pre mysql connector.\\ \\
+if (EXISTS /usr/lib/x86\_64-linux-gnu/libmysqlcppconn.so) \\
+set (LIBS /usr/lib/x86\_64-linux-gnu/libmysqlcppconn.so) \\
+else () \\
+set (LIBS /usr/lib/i386-linux-gnu/libmysqlcppconn.so) \\
+endif () \\
+
+
+
+
 \section*{Záver}
 \addcontentsline{toc}{section}{Záver}
 \newpage
