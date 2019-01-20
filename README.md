@@ -51,9 +51,9 @@
     * ..
 * Zaver
     
-- [ ] Uvod
-- [ ] Ponuka
-- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) (WILL NEED REVIEW)
+- [X] Uvod
+- [X] Ponuka
+- [X] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat
 - [X] Architektura systemu
 - [X] Pouzite technologie
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
@@ -66,5 +66,5 @@
 - [X] Build agentov
 - [X] Build monitoru
 - [ ] Performance (???)
-- [ ] Future work
-- [ ] Zaver (IN PROGRESS - MISO)
+- [X] Future work
+- [X] Zaver
