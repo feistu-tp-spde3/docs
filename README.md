@@ -49,7 +49,7 @@
     * Security (SSL/TLS na stranku, sifrovana komunikacia na sieti, certifikaty...)
     * ..
     
-- [ ] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat  
+- [X] Povodny stav systemu, nedostatky, poziadavky co fixnut, co pridat - (IN PROGRESS - PETO) 
 - [X] Pouzite technologie
 - [ ] Architektura systemu (IN PROGRESS - MISO)
 - [X] Build agentov
