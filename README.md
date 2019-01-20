@@ -31,7 +31,7 @@
     * Ako sa monitoruju procesy (Windows aj Linux)
     * Prikazy od monitoru a ako na nich reaguje agent
     * Ukladanie XML configu pri zmene filtru, monitorovanych procesov apod.
-* Zmeny v PcapSender
+* Zmeny v HBaseWriter
     * Aky format bol pouzity predtym
     * Ako sa to parsuje teraz
     * Nedostatky?
@@ -60,7 +60,7 @@
 - [X] Popis komunikacie medzi monitorom a agentom (spracovanie, format)
 - [X] Popis novych/zmenenych veci v monitore (WILL NEED REVIEW)
 - [X] Popis novych/zmenenych veci v agentovi (WILL NEED REVIEW)
-- [ ] Zmeny v HBaseWriter a PcapSender (IN PROGRESS - MISO)
+- [X] Zmeny v HBaseWriter
 - [X] Detekcie
 - [X] Databaza
 - [ ] Web
